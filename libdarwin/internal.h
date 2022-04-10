@@ -62,9 +62,7 @@
 
 #define OS_CRASH_ENABLE_EXPERIMENTAL_LIBTRACE 1
 #include <os/assumes.h>
-#ifndef DARLING
 #include <os/transaction_private.h>
-#endif // DARLING
 #include <os/log_private.h>
 #include <os/alloc_once_private.h>
 
@@ -80,6 +78,7 @@
 #include <struct.h>
 #include <bootstrap_priv.h>
 #include <assert.h>
+#include <sys/ioctl.h>
 
 #include "h/bsd.h"
 #include "h/cleanup.h"

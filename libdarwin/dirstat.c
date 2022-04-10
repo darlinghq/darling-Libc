@@ -38,7 +38,7 @@
 #include "dirstat.h"
 #include "dirstat_collection.h"
 
-#if !TARGET_OS_SIMULATOR && !defined(DARLING)
+#if !TARGET_OS_SIMULATOR
 #define HAS_APFS
 #endif
 
@@ -219,6 +219,7 @@ fdirstat_fallback(int parent_fd, int flags, struct dirstat *ds)
 
 			if (fd < 0) {
 				DEBUGPRINT( "Unable to open directory %d:%s => %s\n", parent_fd, path, strerror(errno));
+				free(path);
 				continue;
 			}
 		}
