@@ -82,7 +82,15 @@ int	 strcoll(const char *__s1, const char *__s2);
 char	*strcpy(char *__dst, const char *__src);
 #endif /* UNIFDEF_DRIVERKIT */
 size_t	 strcspn(const char *__s, const char *__charset);
+//Begin-Libc
+#ifndef LIBC_ALIAS_STRERROR
+//End-Libc
 char	*strerror(int __errnum) __DARWIN_ALIAS(strerror);
+//Begin-Libc
+#else /* LIBC_ALIAS_STRERROR */
+char	*strerror(int __errnum) LIBC_ALIAS(strerror);
+#endif /* !LIBC_ALIAS_STRERROR */
+//End-Libc
 size_t	 strlen(const char *__s);
 char	*strncat(char *__s1, const char *__s2, size_t __n);
 int	 strncmp(const char *__s1, const char *__s2, size_t __n);
@@ -176,6 +184,10 @@ void	 swab(const void * __restrict, void * __restrict, ssize_t);
 __OSX_AVAILABLE(10.12.1) __IOS_AVAILABLE(10.1)
 __TVOS_AVAILABLE(10.0.1) __WATCHOS_AVAILABLE(3.1)
 int	timingsafe_bcmp(const void *__b1, const void *__b2, size_t __len);
+
+__OSX_AVAILABLE(10.16) __IOS_AVAILABLE(14.0)
+__TVOS_AVAILABLE(14.0) __WATCHOS_AVAILABLE(7.0)
+int 	 strsignal_r(int __sig, char *__strsignalbuf, size_t __buflen);
 __END_DECLS
 
 /* Some functions historically defined in string.h were placed in strings.h

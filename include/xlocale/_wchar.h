@@ -27,6 +27,8 @@
 #include <_stdio.h>
 #include <_xlocale.h>
 #include <sys/_types/_mbstate_t.h>
+#include <sys/_types/_wint_t.h>
+#include <stddef.h> /* wchar_t */
 
 /* Initially added in Issue 4 */
 __BEGIN_DECLS
@@ -61,9 +63,19 @@ int	vwprintf_l(locale_t, const wchar_t * __restrict, __darwin_va_list);
 size_t	wcrtomb_l(char * __restrict, wchar_t, mbstate_t * __restrict,
 	    locale_t);
 int	wcscoll_l(const wchar_t *, const wchar_t *, locale_t);
+//Begin-Libc
+#ifndef LIBC_ALIAS_WCSFTIME_L
+//End-Libc
 size_t	wcsftime_l(wchar_t * __restrict, size_t, const wchar_t * __restrict,
 		const struct tm * __restrict, locale_t)
 		__DARWIN_ALIAS(wcsftime_l);
+//Begin-Libc
+#else /* LIBC_ALIAS_WCSFTIME_L */
+size_t	wcsftime_l(wchar_t * __restrict, size_t, const wchar_t * __restrict,
+		const struct tm * __restrict, locale_t)
+		LIBC_ALIAS(wcsftime_l);
+#endif /* !LIBC_ALIAS_WCSFTIME_L */
+//End-Libc
 size_t	wcsrtombs_l(char * __restrict, const wchar_t ** __restrict, size_t,
 	    mbstate_t * __restrict, locale_t);
 double	wcstod_l(const wchar_t * __restrict, wchar_t ** __restrict, locale_t);
