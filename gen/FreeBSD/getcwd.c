@@ -49,7 +49,7 @@ __FBSDID("$FreeBSD: src/lib/libc/gen/getcwd.c,v 1.29 2007/01/09 00:27:53 imp Exp
 #include <unistd.h>
 #include "un-namespace.h"
 
-#if TARGET_OS_OSX && !TARGET_OS_SIMULATOR
+#if TARGET_OS_OSX && !TARGET_OS_SIMULATOR && !defined(DARLING)
 #include <sys/attr.h>	/* for FSOPT_NOFOLLOW */
 #include <apfs/apfs_fsctl.h>
 #endif
@@ -65,7 +65,7 @@ __FBSDID("$FreeBSD: src/lib/libc/gen/getcwd.c,v 1.29 2007/01/09 00:27:53 imp Exp
 static inline int
 __check_for_firmlink(char *dir_path)
 {
-#if TARGET_OS_OSX && !TARGET_OS_SIMULATOR
+#if TARGET_OS_OSX && !TARGET_OS_SIMULATOR && !defined(DARLING)
 	apfs_firmlink_control_t afc;
 	int is_firmlink;
 	int err;
