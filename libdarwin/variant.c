@@ -39,6 +39,10 @@
 #include <os/variant_private.h>
 #include <os/boot_mode_private.h>
 
+#ifdef DARLING
+extern bool _os_xbs_chrooted;
+#endif
+
 /*
  * Lists all properties overridden by an empty file
  */
@@ -589,7 +593,7 @@ _os_trace_basesystem_storage_available(void);
 static void
 _init_has_full_logging(void)
 {
-#if TARGET_OS_OSX
+#if TARGET_OS_OSX && !defined(DARLING)
 	if (_check_base_system_content() &&
 			!_os_trace_basesystem_storage_available()) {
 		has_full_logging = S_NO;
