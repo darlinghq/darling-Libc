@@ -9,7 +9,7 @@ endif(COMMAND cmake_policy)
 add_definitions(-DHAVE_STDINT_H=1)
 add_definitions(-D__LIBC__ -D__DARWIN_UNIX03=1 -D__DARWIN_64_BIT_INO_T=1 -D__DARWIN_NON_CANCELABLE=1 -D__DARWIN_VERS_1050=1)
 add_definitions("'-D__warn_references(name,warning)='")
-add_definitions(-DBUILDING_LIBC -DPRIVATE -U__POSIX_LIB__)
+add_definitions(-DBUILDING_LIBC -DPRIVATE)
 
 # Hide warnings that get spammed
 add_definitions(
@@ -239,6 +239,7 @@ add_darling_static_library(libc_static SOURCES
 	$<TARGET_OBJECTS:libc-uuid>
 	$<TARGET_OBJECTS:libc-os>
 	$<TARGET_OBJECTS:libc-stdio_extsn>
+	$<TARGET_OBJECTS:libc-darwin>
 	)
 add_dependencies(libc_static ranlib ${APPLE_TARGET_TRIPLET_PRIMARY}-ar)
 set_target_properties(libc_static PROPERTIES COMPILE_FLAGS "-ffunction-sections")
