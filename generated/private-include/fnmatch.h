@@ -21,7 +21,7 @@
  * @APPLE_LICENSE_HEADER_END@
  */
 /*-
- * Copyright (c) 1991, 1993
+ * Copyright (c) 1992, 1993
  *	The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,73 +52,39 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)signal.h	8.3 (Berkeley) 3/30/94
+ *	@(#)fnmatch.h	8.1 (Berkeley) 6/2/93
  */
 
-#ifndef _USER_SIGNAL_H
-#define _USER_SIGNAL_H
+#ifndef	_FNMATCH_H_
+#define	_FNMATCH_H_
 
 #include <sys/cdefs.h>
-#include <_types.h>
-#include <sys/signal.h>
 
-#include <sys/_pthread/_pthread_types.h>
-#include <sys/_pthread/_pthread_t.h>
+#define	FNM_NOMATCH	1	/* Match failed. */
+
+#define	FNM_NOESCAPE	0x01	/* Disable backslash escaping. */
+#define	FNM_PATHNAME	0x02	/* Slash must be matched by slash. */
+#define	FNM_PERIOD	0x04	/* Period must be matched by period. */
+
+#define	FNM_NOSYS	(-1)	/* Reserved. */
 
 #if !defined(_ANSI_SOURCE) && (!defined(_POSIX_C_SOURCE) || defined(_DARWIN_C_SOURCE))
-extern __const char *__const sys_signame[NSIG];
-extern __const char *__const sys_siglist[NSIG];
+#define	FNM_LEADING_DIR	0x08	/* Ignore /<tail> after Imatch. */
+#define	FNM_CASEFOLD	0x10	/* Case insensitive search. */
+#define	FNM_IGNORECASE	FNM_CASEFOLD
+#define	FNM_FILE_NAME	FNM_PATHNAME
 #endif
 
 __BEGIN_DECLS
-int	raise(int);
+//Begin-Libc
+#ifndef LIBC_ALIAS_FNMATCH
+//End-Libc
+int	 fnmatch(const char *, const char *, int) __DARWIN_ALIAS(fnmatch);
+//Begin-Libc
+#else /* LIBC_ALIAS_FNMATCH */
+int	 fnmatch(const char *, const char *, int) LIBC_ALIAS(fnmatch);
+#endif /* !LIBC_ALIAS_FNMATCH */
+//End-Libc
 __END_DECLS
 
-#ifndef	_ANSI_SOURCE
-__BEGIN_DECLS
-void	(* _Nullable bsd_signal(int, void (* _Nullable)(int)))(int);
-int	kill(pid_t, int) __DARWIN_ALIAS(kill);
-int	killpg(pid_t, int) __DARWIN_ALIAS(killpg);
-int	pthread_kill(pthread_t, int);
-int	pthread_sigmask(int, const sigset_t *, sigset_t *) __DARWIN_ALIAS(pthread_sigmask);
-int	sigaction(int, const struct sigaction * __restrict,
-	    struct sigaction * __restrict);
-int	sigaddset(sigset_t *, int);
-int	sigaltstack(const stack_t * __restrict, stack_t * __restrict)  __DARWIN_ALIAS(sigaltstack) __WATCHOS_PROHIBITED __TVOS_PROHIBITED;
-int	sigdelset(sigset_t *, int);
-int	sigemptyset(sigset_t *);
-int	sigfillset(sigset_t *);
-int	sighold(int);
-int	sigignore(int);
-int	siginterrupt(int, int);
-int	sigismember(const sigset_t *, int);
-int	sigpause(int) __DARWIN_ALIAS_C(sigpause);
-int	sigpending(sigset_t *);
-int	sigprocmask(int, const sigset_t * __restrict, sigset_t * __restrict);
-int	sigrelse(int);
-void    (* _Nullable sigset(int, void (* _Nullable)(int)))(int);
-int	sigsuspend(const sigset_t *) __DARWIN_ALIAS_C(sigsuspend);
-int	sigwait(const sigset_t * __restrict, int * __restrict) __DARWIN_ALIAS_C(sigwait);
-#if !defined(_POSIX_C_SOURCE) || defined(_DARWIN_C_SOURCE)
-void	psignal(unsigned int, const char *);
-int	sigblock(int);
-int	sigsetmask(int);
-int	sigvec(int, struct sigvec *, struct sigvec *);
-#endif	/* (!_POSIX_C_SOURCE || _DARWIN_C_SOURCE) */
-__END_DECLS
-
-/* List definitions after function declarations, or Reiser cpp gets upset. */
-__header_always_inline int
-__sigbits(int __signo)
-{
-    return __signo > __DARWIN_NSIG ? 0 : (1 << (__signo - 1));
-}
-
-#define	sigaddset(set, signo)	(*(set) |= __sigbits(signo), 0)
-#define	sigdelset(set, signo)	(*(set) &= ~__sigbits(signo), 0)
-#define	sigismember(set, signo)	((*(set) & __sigbits(signo)) != 0)
-#define	sigemptyset(set)	(*(set) = 0, 0)
-#define	sigfillset(set)		(*(set) = ~(sigset_t)0, 0)
-#endif	/* !_ANSI_SOURCE */
-
-#endif	/* !_USER_SIGNAL_H */
+#endif /* !_FNMATCH_H_ */
