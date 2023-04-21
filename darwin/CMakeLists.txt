@@ -7,7 +7,7 @@ set(darwin_sources
 	compatibility_hacks.c
 	forceLibcToBuild.c
 	kvm.c
-	darling_hacks.c
+	../darling/src/darling_hacks.c
 	subsystem.c
 )
 

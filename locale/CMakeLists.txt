@@ -87,7 +87,7 @@ if (TARGET_i386)
 endif (TARGET_i386)
 
 if (NOT DARLING_NO_EXECUTABLES)
-	install(DIRECTORY locale DESTINATION libexec/darling/usr/share)
+	install(DIRECTORY ../darling/assets/locale DESTINATION libexec/darling/usr/share)
 endif (NOT DARLING_NO_EXECUTABLES)
 
 
