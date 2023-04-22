@@ -15,6 +15,7 @@ set(stdio_sources
 	xprintf_comp.c
 	xprintf_domain.c
 	xprintf_exec.c
+	FreeBSD/_flock_stub.c
 	FreeBSD/asprintf.c
 	FreeBSD/clrerr.c
 	FreeBSD/dprintf.c
@@ -33,7 +34,7 @@ set(stdio_sources
 	FreeBSD/fileno.c
 	FreeBSD/findfp.c
 	FreeBSD/flags.c
-	FreeBSD/_flock_stub.c
+	FreeBSD/fmemopen.c
 	FreeBSD/fopen.c
 	FreeBSD/fprintf.c
 	FreeBSD/fpurge.c
@@ -55,8 +56,8 @@ set(stdio_sources
 	FreeBSD/fwrite.c
 	FreeBSD/fwscanf.c
 	FreeBSD/getc.c
-	FreeBSD/getdelim.c
 	FreeBSD/getchar.c
+	FreeBSD/getdelim.c
 	FreeBSD/getline.c
 	FreeBSD/gets.c
 	FreeBSD/getw.c

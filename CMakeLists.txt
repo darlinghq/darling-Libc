@@ -240,6 +240,7 @@ add_darling_static_library(libc_static SOURCES
 	$<TARGET_OBJECTS:libc-uuid>
 	$<TARGET_OBJECTS:libc-os>
 	$<TARGET_OBJECTS:libc-stdio_extsn>
+	$<TARGET_OBJECTS:libc-darwin>
 	)
 add_dependencies(libc_static ranlib ${APPLE_TARGET_TRIPLET_PRIMARY}-ar)
 set_target_properties(libc_static PROPERTIES COMPILE_FLAGS "-ffunction-sections")

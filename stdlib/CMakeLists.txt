@@ -4,9 +4,15 @@ cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -fblocks -include ${CMAKE_CURRENT_SOURCE_DIR}/../fbsdcompat/_fbsd_compat_.h")
 
-set(stdlib_sources a64l.c grantpt.c l64a.c qsort_b.c)
+set(stdlib_sources
+	a64l.c
+	grantpt.c
+	l64a.c
+	qsort_b.c
+)
 
 set(stdlib_sources ${stdlib_sources}
+	FreeBSD/_Exit_.c
 	FreeBSD/abort.c
 	FreeBSD/abs.c
 	FreeBSD/atexit.c
@@ -17,15 +23,14 @@ set(stdlib_sources ${stdlib_sources}
 	FreeBSD/bsearch.c
 	FreeBSD/div.c
 	FreeBSD/exit.c
-	FreeBSD/_Exit_.c
 	FreeBSD/getenv.c
-	FreeBSD/getopt.c
 	FreeBSD/getopt_long.c
+	FreeBSD/getopt.c
 	FreeBSD/getsubopt.c
 	FreeBSD/hcreate.c
 	FreeBSD/heapsort_b.c
-	FreeBSD/heapsort.c
 	FreeBSD/heapsort_r.c
+	FreeBSD/heapsort.c
 	FreeBSD/imaxabs.c
 	FreeBSD/imaxdiv.c
 	FreeBSD/insque.c
@@ -37,11 +42,11 @@ set(stdlib_sources ${stdlib_sources}
 	FreeBSD/merge_b.c
 	FreeBSD/merge.c
 	FreeBSD/psort_b.c
-	FreeBSD/psort.c
 	FreeBSD/psort_r.c
+	FreeBSD/psort.c
 	FreeBSD/putenv.c
-	FreeBSD/qsort.c
 	FreeBSD/qsort_r.c
+	FreeBSD/qsort.c
 	FreeBSD/radixsort.c
 	FreeBSD/rand.c
 	FreeBSD/random.c
@@ -53,6 +58,7 @@ set(stdlib_sources ${stdlib_sources}
 	FreeBSD/strtoimax.c
 	FreeBSD/strtol.c
 	FreeBSD/strtoll.c
+	FreeBSD/strtonum.c
 	FreeBSD/strtoq.c
 	FreeBSD/strtoul.c
 	FreeBSD/strtoull.c
