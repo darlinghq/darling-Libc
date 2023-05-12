@@ -80,6 +80,7 @@
 #include <struct.h>
 #include <bootstrap_priv.h>
 #include <assert.h>
+#include <sys/ioctl.h>
 
 #include "h/bsd.h"
 #include "h/cleanup.h"

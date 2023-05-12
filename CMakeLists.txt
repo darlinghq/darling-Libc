@@ -22,14 +22,14 @@ add_definitions(
 )
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -nostdinc -fPIC -w ")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -include ${CMAKE_CURRENT_SOURCE_DIR}/weak_reference.h")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -include ${CMAKE_CURRENT_SOURCE_DIR}/darling/include/weak_reference.h")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ggdb -O0") # development flags
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -nostdlib -Wl,-bind_at_load")
 
 include_directories(
 	"${CMAKE_CURRENT_SOURCE_DIR}/fbsdcompat"
 	"${CMAKE_CURRENT_SOURCE_DIR}/darwin"
-	"${CMAKE_CURRENT_SOURCE_DIR}/derived"
+	"${CMAKE_CURRENT_SOURCE_DIR}/generated/derived"
 	"${CMAKE_CURRENT_SOURCE_DIR}/../external/libmalloc/src"
 	"${CMAKE_CURRENT_SOURCE_DIR}/../external/libmalloc/private"
 	"${CMAKE_CURRENT_SOURCE_DIR}/locale"
@@ -41,7 +41,7 @@ include_directories(
 
 include_directories(BEFORE
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
-	"${CMAKE_CURRENT_SOURCE_DIR}/private-include"
+	"${CMAKE_CURRENT_SOURCE_DIR}/generated/private-include"
 )
 
 add_subdirectory(db) # produces libc-db
@@ -86,17 +86,17 @@ if (TARGET_i386)
 			" -arch i386"
 	)
 else (TARGET_i386)
-	add_library(libc-stdio_legacy OBJECT empty.c)
-	add_library(libc-compat_legacy OBJECT empty.c)
-	add_library(libc-stdlib_legacy OBJECT empty.c)
-	add_library(libc-stdtime_legacy OBJECT empty.c)
-	add_library(libc-gen_legacy OBJECT empty.c)
-	add_library(libc-string_legacy OBJECT empty.c)
-	add_library(libc-gdtoa_legacy OBJECT empty.c)
-	add_library(libc-regex_legacy OBJECT empty.c)
-	add_library(libc-locale_legacy OBJECT empty.c)
-	add_library(libc-net_legacy OBJECT empty.c)
-	add_library(libc-i386 OBJECT empty.c)
+	add_library(libc-stdio_legacy OBJECT darling/src/empty.c)
+	add_library(libc-compat_legacy OBJECT darling/src/empty.c)
+	add_library(libc-stdlib_legacy OBJECT darling/src/empty.c)
+	add_library(libc-stdtime_legacy OBJECT darling/src/empty.c)
+	add_library(libc-gen_legacy OBJECT darling/src/empty.c)
+	add_library(libc-string_legacy OBJECT darling/src/empty.c)
+	add_library(libc-gdtoa_legacy OBJECT darling/src/empty.c)
+	add_library(libc-regex_legacy OBJECT darling/src/empty.c)
+	add_library(libc-locale_legacy OBJECT darling/src/empty.c)
+	add_library(libc-net_legacy OBJECT darling/src/empty.c)
+	add_library(libc-i386 OBJECT darling/src/empty.c)
 endif (TARGET_i386)
 
 if (TARGET_x86_64)
@@ -108,7 +108,7 @@ if (TARGET_x86_64)
 			" -arch x86_64"
 	)
 else (TARGET_x86_64)
-	add_library(libc-x86_64 OBJECT empty.c)
+	add_library(libc-x86_64 OBJECT darling/src/empty.c)
 endif (TARGET_x86_64)
 
 make_fat(
@@ -240,6 +240,7 @@ add_darling_static_library(libc_static SOURCES
 	$<TARGET_OBJECTS:libc-uuid>
 	$<TARGET_OBJECTS:libc-os>
 	$<TARGET_OBJECTS:libc-stdio_extsn>
+	$<TARGET_OBJECTS:libc-darwin>
 	)
 add_dependencies(libc_static ranlib ${APPLE_TARGET_TRIPLET_PRIMARY}-ar)
 set_target_properties(libc_static PROPERTIES COMPILE_FLAGS "-ffunction-sections")
