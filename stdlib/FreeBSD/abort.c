@@ -44,6 +44,9 @@ __FBSDID("$FreeBSD: src/lib/libc/stdlib/abort.c,v 1.11 2007/01/09 00:28:09 imp E
 #include <unistd.h>
 #include <pthread.h>
 #include <pthread_workqueue.h>
+#ifdef DARLING
+#include <pthread/workqueue_private.h>
+#endif
 #include "un-namespace.h"
 
 #include "libc_private.h"
