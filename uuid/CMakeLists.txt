@@ -1,6 +1,6 @@
 project(libc-uuid)
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.13)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -include ${CMAKE_CURRENT_SOURCE_DIR}/uuid-config.h")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")

@@ -1,6 +1,6 @@
 project(libc-x86_64)
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.13)
 enable_language(C ASM)
 
 add_definitions(-DPRIVATE)

@@ -1,6 +1,6 @@
 project(libc-posix1e)
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.13)
 
 set(posix1e_sources
 	acl.c
