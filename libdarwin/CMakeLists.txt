@@ -39,8 +39,12 @@ add_circular(system_darwin FAT
 		libdispatch_shared
 		xpc
 		system_trace
+		system_blocks
 
 		# not listed in the Xcode files, but apparently required for `mach.c` (for `bootstrap_strerror`)
+		#
+		# ignore the comment above; this is due to the fact that we still have these functions in liblaunch.
+		# newer Darwin versions have moved these functions in libxpc (and liblaunch simply re-exports them).
 		launch
 )
 
