@@ -111,6 +111,15 @@ else (TARGET_x86_64)
 	add_library(libc-x86_64 OBJECT darling/src/empty.c)
 endif (TARGET_x86_64)
 
+if(TARGET_I386 OR TARGET_X86_64)
+make_fat(
+	libc-gen_noinode64
+	libc-sys_noinode64
+)
+set(TARGET_OBJECTS_LIBC_GEN_NOINODE64 "$<TARGET_OBJECTS:libc-gen_noinode64>")
+set(TARGET_OBJECTS_LIBC_SYS_NOINODE64 "$<TARGET_OBJECTS:libc-sys_noinode64>")
+endif()
+
 make_fat(
 		libc-db
 		libc-compat
@@ -120,7 +129,6 @@ make_fat(
 		libc-gen
 		libc-gen_pre1050
 		libc-gen_cancelable
-		libc-gen_noinode64
 		libc-gen_extsn
 		libc-gmon
 		libc-os
@@ -129,7 +137,6 @@ make_fat(
 		libc-string
 		libc-stdtime
 		libc-sys
-		libc-sys_noinode64
 		libc-stdlib
 		libc-stdlib_extsn
 		libc-stdlib_cancelable
@@ -159,7 +166,7 @@ add_circular(system_c FAT OBJECTS
 	$<TARGET_OBJECTS:libc-gen>
 	$<TARGET_OBJECTS:libc-gen_pre1050>
 	$<TARGET_OBJECTS:libc-gen_cancelable>
-	$<TARGET_OBJECTS:libc-gen_noinode64>
+	${TARGET_OBJECTS_LIBC_GEN_NOINODE64}
 	$<TARGET_OBJECTS:libc-gen_extsn>
 	$<TARGET_OBJECTS:libc-gmon>
 	$<TARGET_OBJECTS:libc-os>
@@ -168,7 +175,7 @@ add_circular(system_c FAT OBJECTS
 	$<TARGET_OBJECTS:libc-string>
 	$<TARGET_OBJECTS:libc-stdtime>
 	$<TARGET_OBJECTS:libc-sys>
-	$<TARGET_OBJECTS:libc-sys_noinode64>
+	${TARGET_OBJECTS_LIBC_SYS_NOINODE64}
 	$<TARGET_OBJECTS:libc-stdlib>
 	$<TARGET_OBJECTS:libc-stdlib_extsn>
 	$<TARGET_OBJECTS:libc-stdlib_cancelable>

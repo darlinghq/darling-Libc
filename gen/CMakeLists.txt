@@ -169,9 +169,11 @@ set_target_properties(libc-gen_cancelable PROPERTIES COMPILE_FLAGS "-D__DARWIN_N
 # ***
 # No-INODE64 variants
 # ***
+if (TARGET_I386 OR TARGET_X86_64)
 set(gen-noinode64_sources FreeBSD/seekdir.c FreeBSD/readdir.c FreeBSD/scandir.c FreeBSD/rewinddir.c FreeBSD/telldir.c fts.c FreeBSD/getmntinfo.c FreeBSD/glob.c FreeBSD/opendir.c nftw.c)
 add_library(libc-gen_noinode64 OBJECT ${gen-noinode64_sources})
 SET_TARGET_PROPERTIES(libc-gen_noinode64 PROPERTIES COMPILE_FLAGS "-U__DARWIN_UNIX03 -U__DARWIN_64_BIT_INO_T -DVARIANT_INODE32 -DBUILDING_VARIANT -D_DARWIN_NO_64_BIT_INODE")
+endif (TARGET_I386 OR TARGET_X86_64)
 
 
 # ***
