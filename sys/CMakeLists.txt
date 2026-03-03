@@ -45,10 +45,13 @@ add_darling_object_library(libc-sys ${sys_sources})
 
 # ***
 # No-INODE64 variants
+# ARM64 only supports 64-bit inodes, so skip this variant
 # ***
+if (NOT TARGET_ARM64)
 set(sys-noinode64_sources statx_np.c)
 add_library(libc-sys_noinode64 OBJECT ${sys-noinode64_sources})
 SET_TARGET_PROPERTIES(libc-sys_noinode64 PROPERTIES COMPILE_FLAGS "-U__DARWIN_UNIX03 -U__DARWIN_64_BIT_INO_T -DVARIANT_INODE32 -DBUILDING_VARIANT -D_DARWIN_NO_64_BIT_INODE")
+endif (NOT TARGET_ARM64)
 
 add_library(libc-sys_dyld OBJECT gettimeofday.c crt_externs.c sigaction.c)
 SET_TARGET_PROPERTIES(libc-sys_dyld PROPERTIES COMPILE_FLAGS "-UBUILDING_VARIANT -DVARIANT_DYLD -DVARIANT_CANCELABLE -DVARIANT_DARWINEXTSN")
