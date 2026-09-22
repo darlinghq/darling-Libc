@@ -21,6 +21,7 @@ set(string_sources ${string_sources}
 	FreeBSD/rpmatch.c
 	FreeBSD/strcasecmp.c
 	FreeBSD/strcasestr.c
+	FreeBSD/strchrnul.c
 	FreeBSD/strcoll.c
 	FreeBSD/strcspn.c
 	FreeBSD/strdup.c
