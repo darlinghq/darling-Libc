@@ -96,6 +96,30 @@ devname_r(dev_t dev, mode_t type, char *buf, int len)
 		return (buf);
 	}
 	(void)closedir(dp);
+
+	/* Check /dev/pts/ for pseudo-terminals on Linux/Darling */
+	if (type == S_IFCHR && (dp = opendir("/dev/pts")) != NULL) {
+		strcpy(_buf, "/dev/pts/");
+		while ( (dirp = readdir(dp)) ) {
+			if (dirp->d_name[0] == '.')
+				continue;
+			bcopy(dirp->d_name, _buf + sizeof("/dev/pts/") - 1,
+			    dirp->d_namlen + 1);
+			if (lstat(_buf, &sb))
+				continue;
+			if (dev != sb.st_rdev)
+				continue;
+			if (type != (sb.st_mode & S_IFMT))
+				continue;
+			if ((int)(sizeof("pts/") - 1 + dirp->d_namlen + 1) > len)
+				break;
+			snprintf(buf, len, "pts/%s", dirp->d_name);
+			(void)closedir(dp);
+			return (buf);
+		}
+		(void)closedir(dp);
+	}
+
 	return (NULL);
 }
 

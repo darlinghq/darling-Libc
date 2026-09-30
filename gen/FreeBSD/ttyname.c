@@ -115,15 +115,31 @@ ttyname_r(int fd, char *thrbuf, size_t len)
 	}
 #endif /* __DARWIN_UNIX03 */
 
+	/* Fast path for Linux/Darling: check /proc/self/fd/<fd> */
+	char proclink[64];
+	snprintf(proclink, sizeof(proclink), "/proc/self/fd/%d", fd);
+	ssize_t n = readlink(proclink, thrbuf, len - 1);
+	if (n > 0) {
+		thrbuf[n] = '\0';
+		struct stat pstat;
+		if (stat(thrbuf, &pstat) == 0 && pstat.st_rdev == sb.st_rdev && S_ISCHR(pstat.st_mode)) {
+#if __DARWIN_UNIX03
+			return (0);
+#else
+			return (thrbuf);
+#endif
+		}
+	}
+
 	strlcpy(thrbuf, _PATH_DEV, len);
 	if (devname_r(sb.st_rdev, S_IFCHR,
 	    thrbuf + strlen(thrbuf), len - strlen(thrbuf)) == NULL)
 #if __DARWIN_UNIX03
-		return (ERANGE);
+		return (ENOTTY);
 	return (0);
 #else /* !__DARWIN_UNIX03 */
 	{
-		errno = ERANGE;
+		errno = ENOTTY;
 		return (NULL);
 	}
 	return (thrbuf);
@@ -181,32 +197,16 @@ ttyname_buf_allocate(void)
 static char *
 ttyname_unthreaded(int fd)
 {
-	struct stat	sb;
-	struct termios	ttyb;
-
-	/* Must be a terminal. */
-	if (tcgetattr(fd, &ttyb) < 0)
-		return (NULL);
-	/* Must be a character device. */
-	if (_fstat(fd, &sb))
-		return (NULL);
-	if (!S_ISCHR(sb.st_mode)) {
-		errno = ENOTTY;
-		return (NULL);
-	}
-
 	if (pthread_once(&ttyname_buf_control, ttyname_buf_allocate)
 		|| !buf) {
 		errno = ENOMEM;
 		return (NULL);
 	}
 
-	strlcpy(buf, _PATH_DEV, sizeof(_PATH_DEV) + MAXNAMLEN);
-	if (devname_r(sb.st_rdev, S_IFCHR,
-		buf + strlen(buf), sizeof(_PATH_DEV) + MAXNAMLEN - strlen(buf)) == NULL) {
-		errno = ERANGE;
-		return (NULL);
-	}
-	return (buf);
+#if __DARWIN_UNIX03
+	return (ttyname_r(fd, buf, sizeof(_PATH_DEV) + MAXNAMLEN) == 0 ? buf : NULL);
+#else
+	return (ttyname_r(fd, buf, sizeof(_PATH_DEV) + MAXNAMLEN));
+#endif
 }
 #endif /* !BUILDING_VARIANT */
