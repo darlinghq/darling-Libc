@@ -635,6 +635,28 @@ strnvis(char *mbdst, size_t dlen, const char *mbsrc, int flags)
 	return istrsenvisxl(mbdst, &dlen, mbsrc, flags, "", NULL);
 }
 
+int
+stravis(char **mbdstp, const char *mbsrc, int flags)
+{
+	size_t len;
+	char *dst;
+
+	if (!mbdstp || !mbsrc)
+		return -1;
+
+	len = strlen(mbsrc) * 4 + 1;
+	if ((dst = malloc(len)) == NULL)
+		return -1;
+
+	int ret = strvis(dst, mbsrc, flags);
+	if (ret < 0) {
+		free(dst);
+		return -1;
+	}
+	*mbdstp = dst;
+	return ret;
+}
+
 /*
  * strvisx - visually encode characters from src into dst
  *
