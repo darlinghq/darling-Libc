@@ -114,7 +114,7 @@ __opendir2(const char *name, int flags)
 {
 	int fd;
 	DIR *dir;
-	int saved_errno;
+	int saved_errno = errno;
 
 	if ((flags & (__DTF_READALL | __DTF_SKIPREAD)) != 0)
 		return (NULL);
@@ -126,6 +126,8 @@ __opendir2(const char *name, int flags)
 	if (dir == NULL) {
 		saved_errno = errno;
 		_close(fd);
+		errno = saved_errno;
+	} else {
 		errno = saved_errno;
 	}
 	return (dir);
@@ -328,7 +330,7 @@ static DIR *
 __opendir_common(int fd, int flags, bool use_current_pos)
 {
 	DIR *dirp;
-	int saved_errno;
+	int saved_errno = errno;
 	int unionstack;
 
 	if ((dirp = malloc(sizeof(DIR) + sizeof(struct _telldir))) == NULL)
@@ -417,6 +419,7 @@ __opendir_common(int fd, int flags, bool use_current_pos)
 		}
 	}
 
+	errno = saved_errno;
 	return (dirp);
 
 fail:
