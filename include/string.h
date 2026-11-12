@@ -163,6 +163,10 @@ void     memset_pattern4(void *__b, const void *__pattern4, size_t __len) __OSX_
 void     memset_pattern8(void *__b, const void *__pattern8, size_t __len) __OSX_AVAILABLE_STARTING(__MAC_10_5, __IPHONE_3_0);
 void     memset_pattern16(void *__b, const void *__pattern16, size_t __len) __OSX_AVAILABLE_STARTING(__MAC_10_5, __IPHONE_3_0);
 
+__OSX_AVAILABLE(15.4) __IOS_AVAILABLE(18.4)
+__TVOS_AVAILABLE(18.4) __WATCHOS_AVAILABLE(11.4)
+char	*strchrnul(const char *__s, int __c);
+
 char	*strcasestr(const char *__big, const char *__little);
 char	*strnstr(const char *__big, const char *__little, size_t __len);
 size_t	 strlcat(char *__dst, const char *__source, size_t __size);
