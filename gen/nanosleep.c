@@ -72,12 +72,37 @@ extern int __semwait_signal_nocancel(int cond_sem, int mutex_sem, int timeout, i
 #define	SEMWAIT_SIGNAL	__semwait_signal_nocancel
 #endif /* VARIANT_CANCELABLE */
 
+#ifdef DARLING
+/*
+ * Darling: nothing signals the semaphore nanosleep() waits on, so the wait is a plain timeout. The private
+ * __darling_nanosleep() of libsystem_kernel sleeps in the host kernel instead of asking darlingserver to
+ * run a timed semaphore wait, and the remaining time is taken from the absolute clock rather than from
+ * the clock service (another round trip).
+ */
+extern int __darling_nanosleep(int cancelable, int64_t tv_sec, int32_t tv_nsec);
+
+static uint64_t
+nanosleep_now_ns(void)
+{
+    static mach_timebase_info_data_t timebase;
+
+    if (timebase.denom == 0) {
+        mach_timebase_info(&timebase);
+    }
+    return mach_absolute_time() * timebase.numer / timebase.denom;
+}
+#endif /* DARLING */
+
 int
 nanosleep(const struct timespec *requested_time, struct timespec *remaining_time) {
-    kern_return_t kret;
     int ret;
+#ifdef DARLING
+    uint64_t started = 0;
+#else
+    kern_return_t kret;
     mach_timespec_t current;
     mach_timespec_t completion;
+#endif
    
 	if (__unix_conforming == 0)
 		__unix_conforming = 1;
@@ -92,6 +117,39 @@ nanosleep(const struct timespec *requested_time, struct timespec *remaining_time
     }
 
 
+#ifdef DARLING
+    if (remaining_time != NULL) {
+        started = nanosleep_now_ns();
+    }
+#ifdef VARIANT_CANCELABLE
+    ret = __darling_nanosleep(1, (int64_t)requested_time->tv_sec, (int32_t)requested_time->tv_nsec);
+#else
+    ret = __darling_nanosleep(0, (int64_t)requested_time->tv_sec, (int32_t)requested_time->tv_nsec);
+#endif
+    if (ret != 0) {
+        errno = ret;
+        if (ret == EINTR) {
+            if (remaining_time != NULL) {
+                uint64_t elapsed = nanosleep_now_ns() - started;
+                int64_t left_sec = (int64_t)requested_time->tv_sec - (int64_t)(elapsed / NSEC_PER_SEC);
+                int64_t left_nsec = (int64_t)requested_time->tv_nsec - (int64_t)(elapsed % NSEC_PER_SEC);
+
+                if (left_nsec < 0) {
+                    left_nsec += NSEC_PER_SEC;
+                    left_sec--;
+                }
+                if (left_sec < 0) {
+                    bzero(remaining_time, sizeof(*remaining_time));
+                } else {
+                    remaining_time->tv_sec = left_sec;
+                    remaining_time->tv_nsec = left_nsec;
+                }
+            }
+        }
+        return -1;
+    }
+    return 0;
+#else /* !DARLING */
     if (remaining_time != NULL) {
 	/* once we add requested_time, this will be the completion time */
         kret = clock_get_time(clock_port, &completion);
@@ -128,6 +186,7 @@ nanosleep(const struct timespec *requested_time, struct timespec *remaining_time
 	}
     }
     return -1;
+#endif /* DARLING */
 }
 
 
