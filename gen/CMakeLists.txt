@@ -25,7 +25,6 @@ set(gen_sources
 	nanosleep.c
 	nftw.c
 	nlist.c
-	oldsyslog.c
 	raise.c
 	setlogin.c
 	sigsetops.c
