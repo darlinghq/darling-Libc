@@ -145,19 +145,43 @@ set(libc_fat_targets
 		libc-sys_dyld
 		libc-gdtoa_dyld
 )
+# The pre-1050 and 32-bit-inode variants exist for the Intel slices only. arm64 has no such
+# variants, and building them for it would define the plain names a second time.
+set(libc_intel_variant_targets libc-gen_pre1050 libc-gen_noinode64 libc-sys_noinode64)
+set(libc_intel_variant_archs "")
+if (TARGET_i386)
+	list(APPEND libc_intel_variant_archs i386)
+endif (TARGET_i386)
+if (TARGET_x86_64)
+	list(APPEND libc_intel_variant_archs x86_64)
+endif (TARGET_x86_64)
+
 if (NOT TARGET_ARM64)
-	list(APPEND libc_fat_targets libc-gen_pre1050 libc-gen_noinode64 libc-sys_noinode64)
+	list(APPEND libc_fat_targets ${libc_intel_variant_targets})
 endif (NOT TARGET_ARM64)
 make_fat(${libc_fat_targets})
 
 set(libc_arm64_excluded_objects "")
-if (NOT TARGET_ARM64)
+if (TARGET_ARM64 AND libc_intel_variant_archs)
+	# With arm64 next to an Intel slice the variants are compiled for the Intel slices only, and
+	# the arm64 link skips them.
+	set(libc_intel_variant_flags "-B ${CMAKE_BINARY_DIR}/src/external/cctools-port/cctools/misc/")
+	foreach (arch IN LISTS libc_intel_variant_archs)
+		set(libc_intel_variant_flags "${libc_intel_variant_flags} -arch ${arch}")
+	endforeach (arch)
+	set_property(TARGET ${libc_intel_variant_targets} APPEND_STRING PROPERTY COMPILE_FLAGS " ${libc_intel_variant_flags}")
+	foreach (tgt IN LISTS libc_intel_variant_targets)
+		add_dependencies(${tgt} lipo)
+	endforeach (tgt)
+	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-no_arch_warnings")
+endif ()
+if (NOT TARGET_ARM64 OR libc_intel_variant_archs)
 	set(libc_arm64_excluded_objects
 		$<TARGET_OBJECTS:libc-gen_pre1050>
 		$<TARGET_OBJECTS:libc-gen_noinode64>
 		$<TARGET_OBJECTS:libc-sys_noinode64>
 	)
-endif (NOT TARGET_ARM64)
+endif ()
 
 set(DYLIB_INSTALL_NAME "/usr/lib/system/libsystem_c.dylib")
 add_circular(system_c FAT OBJECTS

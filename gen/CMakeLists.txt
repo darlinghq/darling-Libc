@@ -169,11 +169,11 @@ set_target_properties(libc-gen_cancelable PROPERTIES COMPILE_FLAGS "-D__DARWIN_N
 # No-INODE64 variants
 # ARM64 only supports 64-bit inodes, so skip this variant
 # ***
-if (NOT TARGET_ARM64)
+if (NOT TARGET_ARM64 OR TARGET_i386 OR TARGET_x86_64)
 set(gen-noinode64_sources FreeBSD/seekdir.c FreeBSD/readdir.c FreeBSD/scandir.c FreeBSD/rewinddir.c FreeBSD/telldir.c fts.c FreeBSD/getmntinfo.c FreeBSD/glob.c FreeBSD/opendir.c nftw.c)
 add_library(libc-gen_noinode64 OBJECT ${gen-noinode64_sources})
 SET_TARGET_PROPERTIES(libc-gen_noinode64 PROPERTIES COMPILE_FLAGS "-U__DARWIN_UNIX03 -U__DARWIN_64_BIT_INO_T -DVARIANT_INODE32 -DBUILDING_VARIANT -D_DARWIN_NO_64_BIT_INODE")
-endif (NOT TARGET_ARM64)
+endif (NOT TARGET_ARM64 OR TARGET_i386 OR TARGET_x86_64)
 
 
 # ***
@@ -212,12 +212,12 @@ SET_TARGET_PROPERTIES(libc-gen_extsn PROPERTIES COMPILE_DEFINITIONS "_DARWIN_UNL
 # ARM64 only supports 1050+ variants, so skip this
 # ***
 
-if (NOT TARGET_ARM64)
+if (NOT TARGET_ARM64 OR TARGET_i386 OR TARGET_x86_64)
 set(gen-pre1050_sources FreeBSD/daemon.c)
 
 add_library(libc-gen_pre1050 OBJECT ${gen-pre1050_sources})
 SET_TARGET_PROPERTIES(libc-gen_pre1050 PROPERTIES COMPILE_FLAGS "-DBUILDING_VARIANT -DVARIANT_PRE1050 -U__DARWIN_UNIX03 -D__DARWIN_UNIX03=0")
-endif (NOT TARGET_ARM64)
+endif (NOT TARGET_ARM64 OR TARGET_i386 OR TARGET_x86_64)
 
 # ***
 # DYLD variants
