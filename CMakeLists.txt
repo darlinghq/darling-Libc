@@ -145,19 +145,26 @@ set(libc_fat_targets
 		libc-sys_dyld
 		libc-gdtoa_dyld
 )
-if (NOT TARGET_ARM64)
-	list(APPEND libc_fat_targets libc-gen_pre1050 libc-gen_noinode64 libc-sys_noinode64)
-endif (NOT TARGET_ARM64)
 make_fat(${libc_fat_targets})
 
-set(libc_arm64_excluded_objects "")
-if (NOT TARGET_ARM64)
-	set(libc_arm64_excluded_objects
-		$<TARGET_OBJECTS:libc-gen_pre1050>
-		$<TARGET_OBJECTS:libc-gen_noinode64>
-		$<TARGET_OBJECTS:libc-sys_noinode64>
-	)
-endif (NOT TARGET_ARM64)
+# The pre-1050 and 32-bit-inode variants are for the Intel slices only: arm64 has no such variants,
+# and building them for it would define the plain names a second time. The other slices' links skip
+# their objects.
+darling_archs(libc_intel_archs FAMILY x86)
+set(libc_intel_variant_objects "")
+if (libc_intel_archs)
+	set(libc_intel_variant_targets libc-gen_pre1050 libc-gen_noinode64 libc-sys_noinode64)
+	darling_arch_flags(libc_intel_arch_flags ${libc_intel_archs})
+	set_property(TARGET ${libc_intel_variant_targets} APPEND_STRING PROPERTY
+		COMPILE_FLAGS " -B ${CMAKE_BINARY_DIR}/src/external/cctools-port/cctools/misc/ ${libc_intel_arch_flags}")
+	foreach (tgt IN LISTS libc_intel_variant_targets)
+		add_dependencies(${tgt} lipo)
+		list(APPEND libc_intel_variant_objects $<TARGET_OBJECTS:${tgt}>)
+	endforeach ()
+	if (NOT libc_intel_archs STREQUAL DARLING_ARCHS)
+		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-no_arch_warnings")
+	endif ()
+endif ()
 
 set(DYLIB_INSTALL_NAME "/usr/lib/system/libsystem_c.dylib")
 add_circular(system_c FAT OBJECTS
@@ -168,7 +175,7 @@ add_circular(system_c FAT OBJECTS
 	$<TARGET_OBJECTS:libc-gdtoa>
 	$<TARGET_OBJECTS:libc-gen>
 	$<TARGET_OBJECTS:libc-gen_cancelable>
-	${libc_arm64_excluded_objects}
+	${libc_intel_variant_objects}
 	$<TARGET_OBJECTS:libc-gen_extsn>
 	$<TARGET_OBJECTS:libc-gmon>
 	$<TARGET_OBJECTS:libc-os>
