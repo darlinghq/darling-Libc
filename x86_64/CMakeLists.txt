@@ -19,6 +19,6 @@ add_library(libc-hwplat_dyld OBJECT
 	gen/mcount.S
 )
 
-# x86_64 assembly: compile it for x86_64 even when the primary slice is another architecture.
+# x86_64 assembly: compiled for x86_64 whichever slice is the primary one
 set_target_properties(libc-hwplat_dyld PROPERTIES COMPILE_FLAGS "-DVARIANT_DYLD -arch x86_64")
 
