@@ -259,6 +259,10 @@ restart:
 				} else if (fn->fn_type == ATEXIT_FN_BLK) {
 					// for atexit_b, call if block code is in range be unloaded
 					void *a = ((struct Block_layout *)fn->fn_ptr.block)->invoke;
+#if __has_feature(ptrauth_calls)
+					// invoke is signed; compare the raw code address against the ranges
+					a = ptrauth_strip(a, ptrauth_key_block_function);
+#endif
 					if (!__cxa_in_range(ranges, count, a)) {
 						continue; // not being unloaded yet
 					}
