@@ -53,14 +53,9 @@ __FBSDID("$FreeBSD$");
 static bool
 __kernel_supports_unionfs(void)
 {
-	static int8_t kernel_supports_unionfs = -1;
-	if (kernel_supports_unionfs == -1) {
-		int value = 0;
-		size_t len = sizeof(value);
-		sysctlbyname("kern.secure_kernel", &value, &len, NULL, 0);
-		kernel_supports_unionfs = !value;
-	}
-	return kernel_supports_unionfs;
+	/* Linux does not implement Darwin unionfs.
+	 * Disable unionfs support to prevent futile traversal and polluting errno. */
+	return false;
 }
 
 static int
